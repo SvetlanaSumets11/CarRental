@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "carservice"
+version = "0.1.0"
+description = ""
+authors = ["Svitlana Sumets <svetasumets@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^6.1.0"
+flake8-import-order = "^0.18.2"
+flake8-print = "^5.0.0"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
