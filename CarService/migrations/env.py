@@ -1,14 +1,11 @@
 from logging.config import fileConfig
+from os import getenv
 
 from alembic import context
-from environs import Env
 from sqlalchemy import engine_from_config, pool
 
 from app.database.db import Base
-from app.database.models import Brand, Car, Category, Color, FuelType, Transmission  # noqa
-
-env = Env()
-env.read_env('.env')
+from app.database.models import Car  # noqa
 
 config = context.config
 
@@ -17,12 +14,11 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
-section = config.config_ini_section
-config.set_section_option(section, 'POSTGRES_USER', env('POSTGRES_USER'))
-config.set_section_option(section, 'POSTGRES_PASSWORD', env('POSTGRES_PASSWORD'))
-config.set_section_option(section, 'POSTGRES_DATABASE', env('POSTGRES_DATABASE'))
-config.set_section_option(section, 'POSTGRES_HOST', env('POSTGRES_HOST'))
-config.set_section_option(section, 'POSTGRES_PORT', env('POSTGRES_PORT'))
+
+def get_url() -> str:
+    database_url = getenv("DATABASE_URL", config.get_main_option("sqlalchemy.url"))
+    database_url = database_url.replace('postgresql+asyncpg', 'postgresql')
+    return database_url
 
 
 def run_migrations_offline() -> None:
@@ -37,7 +33,7 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
+    url = get_url()
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -56,8 +52,10 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
+    configuration = config.get_section(config.config_ini_section, {})
+    configuration["sqlalchemy.url"] = get_url()
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        configuration,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )

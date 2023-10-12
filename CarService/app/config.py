@@ -6,11 +6,7 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     PROJECT_NAME: str = 'CarService'
 
-    POSTGRES_ENGINE: str
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_HOST: str
-    POSTGRES_DATABASE: str
+    DATABASE_URL: str
 
     class Config:
         case_sensitive = True
