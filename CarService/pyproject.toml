@@ -6,12 +6,19 @@ authors = ["Svitlana Sumets <svetasumets@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dev-dependencies]
-flake8 = "^6.1.0"
+flake8 = "^7.0.0"
 flake8-import-order = "^0.18.2"
 flake8-print = "^5.0.0"
 
 [tool.poetry.dependencies]
 python = "^3.11"
+alembic = "^1.11.2"
+pydantic = "^2.1.1"
+pydantic-settings = "^2.0.3"
+asyncpg = "^0.28.0"
+psycopg2 = "^2.9.7"
+fastapi = "^0.109.2"
+sqlalchemy = "2.0.23"
 
 [build-system]
 requires = ["poetry-core"]

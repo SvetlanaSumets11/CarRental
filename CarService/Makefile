@@ -4,7 +4,7 @@ down:
 	docker compose down
 
 db:
-	sudo -i -u postgres psql support_ticket_db
+	sudo -i -u postgres psql car_rental_db
 docker-db:
 	docker compose exec db psql --user postgres car_rental_db
 migrate:
