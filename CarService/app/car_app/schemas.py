@@ -1,61 +1,71 @@
 from datetime import datetime
+from typing import Any
 
-from pydantic import BaseModel, ConfigDict
-from pydantic.v1 import validator
+from pydantic import BaseModel, ConfigDict, field_validator, model_validator, PositiveFloat
 
 from app.core.enums import Brands, Categories, Colors, FuelTypes, Statuses, Transmissions
 
 
-class CarSchema(BaseModel):
-    id: int
-    number: str
-    image: str | None
+class BaseCarSchema(BaseModel):
     brand: Brands
-    description: str | None
+    year: int
+    status: Statuses
+    description: str | None = None
     transmission: Transmissions
     fuel_type: FuelTypes
     color: Colors
     category: Categories
-    engine_capacity: str
-    year: int
-    status: Statuses
-    station_id: str
-    cost_per_day: float
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class CarCreatingSchema(BaseModel):
-    id: int
-    number: str
-    image: str = None
-    brand: Brands
-    description: str = None
-    transmission: Transmissions
-    fuel_type: FuelTypes
-    color: Colors
-    category: Categories
-    engine_capacity: float
-    year: int
-    status: Statuses
+    engine_capacity: PositiveFloat
     station_id: int
-    cost_per_day: float
+    cost_per_hour: PositiveFloat
 
-    @validator('engine_capacity')
-    def engine_capacity_must_be_positive(cls, value: float) -> float:
-        if value <= 0:
-            raise ValueError('Engine capacity must be positive')
-        return value
-
-    @validator('year')
-    def year_must_be_valid(cls, year: int) -> int:
+    @field_validator('year')
+    @classmethod
+    def over_the_current_year(cls, year: int) -> int:
         current_year = datetime.now().year
         if year < 1900 or year > current_year:
             raise ValueError('Year must be between 1900 and current year')
         return year
 
-    @validator('cost_per_day')
-    def cost_per_day_must_be_positive(cls, value: float) -> float:
-        if value <= 0:
-            raise ValueError('cost_per_day must be positive')
+
+class CarSchema(BaseCarSchema):
+    id: int
+    number: str
+    image: str | None = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CarCreatingSchema(BaseCarSchema):
+    number: str
+
+    @model_validator(mode='before')
+    @classmethod
+    def validate_to_json(cls, value: Any) -> Any:
+        if isinstance(value, str):
+            return cls.model_validate_json(value)
+        return value
+
+
+class CarUpdatingSchema(BaseCarSchema):
+    @model_validator(mode='before')
+    @classmethod
+    def validate_to_json(cls, value: Any) -> Any:
+        if isinstance(value, str):
+            return cls.model_validate_json(value)
+        return value
+
+
+class CarPartialUpdateSchema(BaseModel):
+    status: Statuses | None = None
+    description: str | None = None
+    color: Colors | None = None
+    station_id: int | None = None
+    cost_per_hour: PositiveFloat | None = None
+
+    @model_validator(mode='before')
+    @classmethod
+    def validate_to_json(cls, value: Any) -> Any:
+        if isinstance(value, str):
+            return cls.model_validate_json(value)
         return value

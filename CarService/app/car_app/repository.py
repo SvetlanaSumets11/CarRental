@@ -3,7 +3,7 @@ from sqlalchemy import delete, insert, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.car_app.schemas import CarCreatingSchema, CarSchema
+from app.car_app.schemas import CarCreatingSchema, CarPartialUpdateSchema, CarSchema, CarUpdatingSchema
 from app.core.database import get_session
 from app.core.exceptions import CarCreationError, CarGettingError, CarUpdateError
 from app.models.cars import Car
@@ -13,34 +13,53 @@ class CarRepository:
     def __init__(self, session: AsyncSession = Depends(get_session)):
         self._session = session
 
-    async def get_by_number(self, car_number: str) -> CarSchema:
-        query = select(Car).where(Car.number == car_number)
+    async def get_by_id(self, car_id: int) -> CarSchema:
+        query = select(Car).where(Car.id == car_id)
+
         car = await self._session.scalar(query)
         if car is None:
-            raise CarGettingError(f'Car with number {car_number} does not exist', 404)
+            raise CarGettingError(f'Car with id {car_id} does not exist', 404)
+
         return CarSchema.model_validate(car)
 
     async def get_all(self) -> list[CarSchema]:
         query = select(Car)
-        cars = await self._session.execute(query)
+        cars = await self._session.scalars(query)
         return [CarSchema.model_validate(car) for car in cars]
 
-    async def create(self, **car_data) -> CarCreatingSchema:
-        query = insert(Car).values(**car_data).returning(Car)
-        try:
-            car = await self._session.scalar(query)
-        except IntegrityError as ex:
-            raise CarCreationError(f'Cannot create car with number {car_data.get("number")}, err={ex}', status_code=409)
-        return CarCreatingSchema.model_validate(car)
+    async def create(self, car_schema: CarCreatingSchema, file_name: str) -> CarSchema:
+        full_schema = car_schema.model_dump() | {'image': file_name}
+        query = insert(Car).values(full_schema).returning(Car)
 
-    async def upgrade(self, car_number: str, **car_data) -> CarSchema:
-        query = update(Car).filter(Car.number == car_number).values(**car_data).returning(Car)
         try:
             car = await self._session.scalar(query)
-        except IntegrityError as ex:
-            raise CarUpdateError(f'Cannot update car with number {car_data.get("number")}, err={ex}', status_code=409)
+        except IntegrityError as err:
+            raise CarCreationError(f'Cannot create car with id {car_schema.id}, err={err}', status_code=409)
+
         return CarSchema.model_validate(car)
 
-    async def remove(self, car_number: str):
-        query = delete(Car).where(Car.number == car_number)
-        await self._session.scalar(query)
+    async def update(self, car_id: int, car_schema: CarUpdatingSchema, file_name: str) -> CarSchema:
+        full_schema = car_schema.model_dump() | {'image': file_name}
+        query = update(Car).filter(Car.id == car_id).values(full_schema).returning(Car)
+
+        try:
+            car = await self._session.scalar(query)
+        except IntegrityError as err:
+            raise CarUpdateError(f'Cannot update car with id {car_schema.id}, err={err}', status_code=409)
+
+        return CarSchema.model_validate(car)
+
+    async def update_partially(self, car_id: int, car_schema: CarPartialUpdateSchema, file_name: str) -> CarSchema:
+        full_schema = car_schema.model_dump(exclude_none=True) | {'image': file_name}
+        query = update(Car).filter(Car.id == car_id).values(full_schema).returning(Car)
+
+        try:
+            car = await self._session.scalar(query)
+        except IntegrityError as err:
+            raise CarUpdateError(f'Cannot update car with {car_schema.model_dump()}, err={err}', status_code=409)
+
+        return CarSchema.model_validate(car)
+
+    async def remove(self, car_id: int):
+        query = delete(Car).where(Car.id == car_id)
+        await self._session.execute(query)
