@@ -15,3 +15,11 @@ class CarCreationError(BaseServiceError):
 
 class CarUpdateError(BaseServiceError):
     pass
+
+
+class CarDeletingError(BaseServiceError):
+    pass
+
+
+class UploadFileError(BaseServiceError):
+    pass

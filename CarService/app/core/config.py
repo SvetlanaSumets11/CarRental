@@ -9,6 +9,9 @@ class Settings(BaseSettings):
 
     DATABASE_URL: PostgresDsn
 
+    AWS_S3_CARS_BUCKET_NAME: str
+    AWS_S3_ENDPOINT_URL: str | None = None
+
     model_config = SettingsConfigDict(
         case_sensitive=True,
         frozen=True,
@@ -19,6 +22,3 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
-
-
-settings = get_settings()

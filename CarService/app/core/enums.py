@@ -1,62 +1,62 @@
-from enum import StrEnum
+from enum import auto, StrEnum
 
 
 class Statuses(StrEnum):
-    ordered = 'ordered'
-    repaired = 'repaired'
-    free = 'free'
+    ordered = auto()
+    repaired = auto()
+    free = auto()
 
 
 class Brands(StrEnum):
-    toyota = 'Toyota'
-    honda = 'Honda'
-    ford = 'Ford'
-    bmw = 'BMW'
-    mercedes_benz = 'Mercedes-Benz'
-    volkswagen = 'Volkswagen'
-    nissan = 'Nissan'
-    hyundai = 'Hyundai'
-    audi = 'Audi'
-    subaru = 'Subaru'
-    kia = 'Kia'
-    tesla = 'Tesla'
-    mazda = 'Mazda'
+    toyota = auto()
+    honda = auto()
+    ford = auto()
+    bmw = auto()
+    mercedes_benz = auto()
+    volkswagen = auto()
+    nissan = auto()
+    hyundai = auto()
+    audi = auto()
+    subaru = auto()
+    kia = auto()
+    tesla = auto()
+    mazda = auto()
 
 
 class Transmissions(StrEnum):
-    manual = 'Manual'
-    automatic = 'Automatic'
-    automated_manual = 'Automated Manual'
-    hydrostatic = 'Hydrostatic'
+    manual = auto()
+    automatic = auto()
+    automated_manual = auto()
+    hydrostatic = auto()
 
 
 class FuelTypes(StrEnum):
-    gasoline = 'Gasoline'
-    diesel = 'Diesel'
-    electric = 'Electric'
-    hybrid = 'Hybrid'
-    natural_gas = 'Natural Gas'
-    ethanol = 'Ethanol'
+    gasoline = auto()
+    diesel = auto()
+    electric = auto()
+    hybrid = auto()
+    natural_gas = auto()
+    ethanol = auto()
 
 
 class Colors(StrEnum):
-    white = 'White'
-    black = 'Black'
-    silver = 'Silver'
-    gray = 'Gray'
-    blue = 'Blue'
-    brown = 'Brown'
-    gold = 'Gold'
-    bronze = 'Bronze'
+    white = auto()
+    black = auto()
+    silver = auto()
+    gray = auto()
+    blue = auto()
+    brown = auto()
+    gold = auto()
+    bronze = auto()
 
 
 class Categories(StrEnum):
-    economy = 'Economy'
-    compact = 'Compact'
-    suv = 'SUV'
-    crossover = 'Crossover'
-    luxury = 'Luxury'
-    sports = 'Sports'
-    convertible = 'Convertible'
-    minivan = 'Minivan'
-    pickup_truck = 'Pickup Truck'
+    economy = auto()
+    compact = auto()
+    suv = auto()
+    crossover = auto()
+    luxury = auto()
+    sports = auto()
+    convertible = auto()
+    minivan = auto()
+    pickup_truck = auto()

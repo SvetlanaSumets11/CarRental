@@ -1,61 +1,74 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict
-from pydantic.v1 import validator
+from fastapi import Form
+from pydantic import BaseModel, ConfigDict, field_validator, PositiveFloat
 
 from app.core.enums import Brands, Categories, Colors, FuelTypes, Statuses, Transmissions
 
 
-class CarSchema(BaseModel):
-    id: int
+class BaseCarSchema(BaseModel):
     number: str
-    image: str | None
     brand: Brands
-    description: str | None
+    year: int
+    status: Statuses
+    description: str | None = None
     transmission: Transmissions
     fuel_type: FuelTypes
     color: Colors
     category: Categories
-    engine_capacity: str
-    year: int
-    status: Statuses
-    station_id: str
-    cost_per_day: float
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class CarCreatingSchema(BaseModel):
-    id: int
-    number: str
-    image: str = None
-    brand: Brands
-    description: str = None
-    transmission: Transmissions
-    fuel_type: FuelTypes
-    color: Colors
-    category: Categories
-    engine_capacity: float
-    year: int
-    status: Statuses
+    engine_capacity: PositiveFloat
     station_id: int
-    cost_per_day: float
+    cost_per_hour: PositiveFloat
 
-    @validator('engine_capacity')
-    def engine_capacity_must_be_positive(cls, value: float) -> float:
-        if value <= 0:
-            raise ValueError('Engine capacity must be positive')
-        return value
-
-    @validator('year')
-    def year_must_be_valid(cls, year: int) -> int:
+    @field_validator('year')
+    def over_the_current_year(cls, year: int) -> int:
         current_year = datetime.now().year
         if year < 1900 or year > current_year:
             raise ValueError('Year must be between 1900 and current year')
         return year
 
-    @validator('cost_per_day')
-    def cost_per_day_must_be_positive(cls, value: float) -> float:
-        if value <= 0:
-            raise ValueError('cost_per_day must be positive')
-        return value
+    @classmethod
+    def as_form(
+        cls,
+        number: str = Form(),
+        brand: Brands = Form(),
+        year: int = Form(),
+        status: Statuses = Form(),
+        description: str | None = Form(None),
+        transmission: Transmissions = Form(),
+        fuel_type: FuelTypes = Form(),
+        color: Colors = Form(),
+        category: Categories = Form(),
+        engine_capacity: PositiveFloat = Form(),
+        station_id: int = Form(),
+        cost_per_hour: PositiveFloat = Form(),
+    ) -> 'BaseCarSchema':
+        return cls(
+            description=description,
+            status=status,
+            color=color,
+            engine_capacity=engine_capacity,
+            fuel_type=fuel_type,
+            cost_per_hour=cost_per_hour,
+            station_id=station_id,
+            transmission=transmission,
+            number=number,
+            year=year,
+            brand=brand,
+            category=category,
+        )
+
+
+class CarSchema(BaseCarSchema):
+    id: int
+    image: str | None = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CarCreatingSchema(BaseCarSchema):
+    pass
+
+
+class CarUpdatingSchema(BaseCarSchema):
+    pass

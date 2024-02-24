@@ -4,7 +4,7 @@ from os import getenv
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-from app.core.config import settings
+from app.core.config import get_settings
 from app.core.database import Base
 from app.models.cars import Car  # noqa
 
@@ -16,7 +16,7 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 section = config.config_ini_section
-config.set_section_option(section, 'DATABASE_URL', settings.DATABASE_URL.unicode_string())
+config.set_section_option(section, 'DATABASE_URL', get_settings().DATABASE_URL.unicode_string())
 
 
 def get_url() -> str:
