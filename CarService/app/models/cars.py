@@ -26,7 +26,7 @@ class Car(Base):
     )
     status: Mapped[str] = mapped_column(Enum(Statuses), nullable=False, default=Statuses.free)
     station_id: Mapped[int] = mapped_column(Integer, nullable=False)
-    cost_per_day: Mapped[float] = mapped_column(Float, CheckConstraint('cost_per_day > 0'), nullable=False)
+    cost_per_hour: Mapped[float] = mapped_column(Float, CheckConstraint('cost_per_hour > 0'), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )

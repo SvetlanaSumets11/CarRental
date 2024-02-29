@@ -9,15 +9,13 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from app.core.config import get_settings
 
-settings = get_settings()
-
 Base = declarative_base()
 
 
 @lru_cache
 def _async_engine() -> AsyncEngine:
     return create_async_engine(
-        settings.DATABASE_URL.unicode_string(),
+        get_settings().DATABASE_URL.unicode_string(),
         pool_pre_ping=True,
     )
 

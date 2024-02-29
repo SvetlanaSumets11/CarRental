@@ -1,8 +1,8 @@
 """Create_models
 
-Revision ID: 026f789af3eb
+Revision ID: 48650faf4d2b
 Revises: 
-Create Date: 2024-02-16 20:11:31.814557
+Create Date: 2024-02-27 20:07:26.062437
 
 """
 from typing import Sequence, Union
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = '026f789af3eb'
+revision: str = '48650faf4d2b'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -54,7 +54,7 @@ def upgrade() -> None:
         sa.Column('year', sa.Integer(), nullable=False),
         sa.Column('status', sa.Enum('ordered', 'repaired', 'free', name='statuses'), nullable=False),
         sa.Column('station_id', sa.Integer(), nullable=False),
-        sa.Column('cost_per_day', sa.Float(), nullable=False),
+        sa.Column('cost_per_hour', sa.Float(), nullable=False),
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
         sa.PrimaryKeyConstraint('id'),
         sa.UniqueConstraint('image'),
