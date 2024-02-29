@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from alembic.command import upgrade
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
@@ -7,11 +9,18 @@ from app.core.config import get_settings
 from app.core.database import get_alembic_config
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    alembic_config = get_alembic_config(get_settings().DATABASE_URL)
+    upgrade(alembic_config, 'head')
+    yield
+
+
 def create_app() -> FastAPI:
     application = FastAPI(
         title=get_settings().PROJECT_NAME,
         version='0.1.0',
-        openapi_url='/openapi.json',
+        lifespan=lifespan,
     )
     application.include_router(router)
 
@@ -27,9 +36,3 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
-
-
-@app.on_event('startup')
-async def startup():
-    alembic_config = get_alembic_config(get_settings().DATABASE_URL)
-    upgrade(alembic_config, 'head')

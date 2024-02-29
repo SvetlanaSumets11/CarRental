@@ -2,8 +2,8 @@ from asyncio import gather
 
 from fastapi import Depends, UploadFile
 
+from app.api.schemas import CarCreatingSchema, CarSchema, CarUpdatingSchema, StatusUpdateSchema
 from app.car_app.repository import CarRepository
-from app.car_app.schemas import CarCreatingSchema, CarSchema, CarUpdatingSchema
 from app.core.exceptions import CarCreationError, CarDeletingError, CarGettingError, CarUpdateError, UploadFileError
 from app.storage.s3 import get_s3, S3Manager
 
@@ -17,12 +17,7 @@ class CarService:
 
     async def get_cars(self) -> list[CarSchema]:
         cars = await self.repository.get_all()
-
-        tasks = [self.s3.create_presigned_url(car.image) for car in cars]
-        urls = await gather(*tasks)
-        for car, url in zip(cars, urls):
-            car.image = url
-
+        cars = await self._set_image_url(cars)
         return cars
 
     async def get_car(self, car_id: int) -> CarSchema:
@@ -83,3 +78,20 @@ class CarService:
             raise CarDeletingError('Cannot delete car image', status_code=520)
 
         await self.repository.remove(car_id)
+
+    async def get_cars_by_ids(self, car_ids: list[int]) -> list[CarSchema]:
+        cars = await self.repository.get_by_ids(car_ids)
+        cars = await self._set_image_url(cars)
+        return cars
+
+    async def update_cars_status(self, status_schema: StatusUpdateSchema) -> list[CarSchema]:
+        updated_cars = await self.repository.update_status(status_schema)
+        cars = await self._set_image_url(updated_cars)
+        return cars
+
+    async def _set_image_url(self, cars: list[CarSchema]) -> list[CarSchema]:
+        tasks = [self.s3.create_presigned_url(car.image) for car in cars]
+        urls = await gather(*tasks)
+        for car, url in zip(cars, urls):
+            car.image = url
+        return cars

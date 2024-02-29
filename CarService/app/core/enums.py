@@ -1,13 +1,13 @@
 from enum import auto, StrEnum
 
 
-class Statuses(StrEnum):
+class CarStatuse(StrEnum):
     ordered = auto()
     repaired = auto()
     free = auto()
 
 
-class Brands(StrEnum):
+class Brand(StrEnum):
     toyota = auto()
     honda = auto()
     ford = auto()
@@ -23,14 +23,14 @@ class Brands(StrEnum):
     mazda = auto()
 
 
-class Transmissions(StrEnum):
+class Transmission(StrEnum):
     manual = auto()
     automatic = auto()
     automated_manual = auto()
     hydrostatic = auto()
 
 
-class FuelTypes(StrEnum):
+class FuelType(StrEnum):
     gasoline = auto()
     diesel = auto()
     electric = auto()
@@ -39,7 +39,7 @@ class FuelTypes(StrEnum):
     ethanol = auto()
 
 
-class Colors(StrEnum):
+class Color(StrEnum):
     white = auto()
     black = auto()
     silver = auto()
@@ -50,7 +50,7 @@ class Colors(StrEnum):
     bronze = auto()
 
 
-class Categories(StrEnum):
+class Category(StrEnum):
     economy = auto()
     compact = auto()
     suv = auto()

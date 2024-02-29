@@ -3,7 +3,7 @@ from sqlalchemy import delete, insert, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.car_app.schemas import CarCreatingSchema, CarSchema, CarUpdatingSchema
+from app.api.schemas import CarCreatingSchema, CarSchema, CarUpdatingSchema, StatusUpdateSchema
 from app.core.database import get_session
 from app.core.exceptions import CarCreationError, CarGettingError, CarUpdateError
 from app.models.cars import Car
@@ -52,3 +52,22 @@ class CarRepository:
     async def remove(self, car_id: int):
         query = delete(Car).where(Car.id == car_id)
         await self._session.execute(query)
+
+    async def get_by_ids(self, car_ids: list[int]) -> list[CarSchema]:
+        query = select(Car).where(Car.id.in_(car_ids))
+
+        cars = await self._session.scalars(query)
+        if cars is None:
+            raise CarGettingError(f'Cars with ids {car_ids} do not exist', 404)
+
+        return [CarSchema.model_validate(car) for car in cars]
+
+    async def update_status(self, status_schema: StatusUpdateSchema) -> list[CarSchema]:
+        query = update(Car).where(Car.id.in_(status_schema.car_ids)).values(status=status_schema.status).returning(Car)
+
+        try:
+            cars = await self._session.scalars(query)
+        except IntegrityError as err:
+            raise CarUpdateError(f'Cannot update car with {status_schema.model_dump()}, err={err}', status_code=409)
+
+        return [CarSchema.model_validate(car) for car in cars]

@@ -5,7 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
 from app.core.database import Base
-from app.core.enums import Brands, Categories, Colors, FuelTypes, Statuses, Transmissions
+from app.core.enums import Brand, CarStatuse, Category, Color, FuelType, Transmission
 
 
 class Car(Base):
@@ -14,17 +14,17 @@ class Car(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     number: Mapped[str] = mapped_column(String(length=16), unique=True, nullable=False)
     image: Mapped[str] = mapped_column(String(length=256), unique=True, nullable=True)
-    brand: Mapped[str] = mapped_column(Enum(Brands), nullable=False)
+    brand: Mapped[str] = mapped_column(Enum(Brand), nullable=False)
     description: Mapped[str] = mapped_column(String(length=256), nullable=True)
-    transmission: Mapped[str] = mapped_column(Enum(Transmissions), nullable=False)
-    fuel_type: Mapped[str] = mapped_column(Enum(FuelTypes), nullable=False)
-    color: Mapped[str] = mapped_column(Enum(Colors), nullable=False)
-    category: Mapped[str] = mapped_column(Enum(Categories), nullable=False)
+    transmission: Mapped[str] = mapped_column(Enum(Transmission), nullable=False)
+    fuel_type: Mapped[str] = mapped_column(Enum(FuelType), nullable=False)
+    color: Mapped[str] = mapped_column(Enum(Color), nullable=False)
+    category: Mapped[str] = mapped_column(Enum(Category), nullable=False)
     engine_capacity: Mapped[float] = mapped_column(Float, CheckConstraint('engine_capacity > 0'), nullable=False)
     year: Mapped[int] = mapped_column(
         Integer, CheckConstraint('year >= 1900 AND year <= EXTRACT(YEAR FROM NOW())'), nullable=False
     )
-    status: Mapped[str] = mapped_column(Enum(Statuses), nullable=False, default=Statuses.free)
+    status: Mapped[str] = mapped_column(Enum(CarStatuse), nullable=False, default=CarStatuse.free)
     station_id: Mapped[int] = mapped_column(Integer, nullable=False)
     cost_per_hour: Mapped[float] = mapped_column(Float, CheckConstraint('cost_per_hour > 0'), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
