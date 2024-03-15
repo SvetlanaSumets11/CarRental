@@ -14,16 +14,13 @@ EXPIRATION_TIME = 60 * 60
 
 class FileManager(Protocol):
     @Boto3ErrorHandler()
-    async def create_presigned_url(self, file_name: str, expiration_time: int = EXPIRATION_TIME) -> str | None:
-        ...
+    async def create_presigned_url(self, file_name: str, expiration_time: int = EXPIRATION_TIME) -> str | None: ...
 
     @Boto3ErrorHandler(return_value=False)
-    async def upload_file(self, file: UploadFile, file_name: str) -> bool:
-        ...
+    async def upload_file(self, file: UploadFile, file_name: str) -> bool: ...
 
     @Boto3ErrorHandler(return_value=False)
-    async def delete_objects(self, file_name: str) -> bool:
-        ...
+    async def delete_objects(self, file_name: str) -> bool: ...
 
 
 class S3Manager(FileManager):

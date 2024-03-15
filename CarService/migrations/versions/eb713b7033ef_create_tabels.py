@@ -1,8 +1,8 @@
-"""Create_models
+"""Create_tabels
 
-Revision ID: 48650faf4d2b
+Revision ID: eb713b7033ef
 Revises: 
-Create Date: 2024-02-27 20:07:26.062437
+Create Date: 2024-03-15 22:24:56.732918
 
 """
 from typing import Sequence, Union
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = '48650faf4d2b'
+revision: str = 'eb713b7033ef'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -27,39 +27,38 @@ def upgrade() -> None:
         sa.Column(
             'brand', sa.Enum(
                 'toyota', 'honda', 'ford', 'bmw', 'mercedes_benz', 'volkswagen', 'nissan', 'hyundai', 'audi', 'subaru',
-                'kia', 'tesla', 'mazda', name='brands'
-                ), nullable=False
-            ),
+                'kia', 'tesla', 'mazda', name='brand'
+            ), nullable=False
+        ),
         sa.Column('description', sa.String(length=256), nullable=True),
         sa.Column(
-            'transmission', sa.Enum('manual', 'automatic', 'automated_manual', 'hydrostatic', name='transmissions'),
+            'transmission', sa.Enum('manual', 'automatic', 'automated_manual', 'hydrostatic', name='transmission'),
             nullable=False
-            ),
+        ),
         sa.Column(
-            'fuel_type',
-            sa.Enum('gasoline', 'diesel', 'electric', 'hybrid', 'natural_gas', 'ethanol', name='fueltypes'),
+            'fuel_type', sa.Enum('gasoline', 'diesel', 'electric', 'hybrid', 'natural_gas', 'ethanol', name='fueltype'),
             nullable=False
-            ),
+        ),
         sa.Column(
-            'color', sa.Enum('white', 'black', 'silver', 'gray', 'blue', 'brown', 'gold', 'bronze', name='colors'),
+            'color', sa.Enum('white', 'black', 'silver', 'gray', 'blue', 'brown', 'gold', 'bronze', name='color'),
             nullable=False
-            ),
+        ),
         sa.Column(
             'category', sa.Enum(
                 'economy', 'compact', 'suv', 'crossover', 'luxury', 'sports', 'convertible', 'minivan', 'pickup_truck',
-                name='categories'
-                ), nullable=False
-            ),
+                name='category'
+            ), nullable=False
+        ),
         sa.Column('engine_capacity', sa.Float(), nullable=False),
         sa.Column('year', sa.Integer(), nullable=False),
-        sa.Column('status', sa.Enum('ordered', 'repaired', 'free', name='statuses'), nullable=False),
+        sa.Column('status', sa.Enum('ordered', 'repaired', 'free', name='carstatuse'), nullable=False),
         sa.Column('station_id', sa.Integer(), nullable=False),
         sa.Column('cost_per_hour', sa.Float(), nullable=False),
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
         sa.PrimaryKeyConstraint('id'),
         sa.UniqueConstraint('image'),
         sa.UniqueConstraint('number')
-        )
+    )
     # ### end Alembic commands ###
 
 

@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, Query, Response, UploadFile
 
+from app.api.schemas import CarCreatingSchema, CarSchema, CarUpdatingSchema, StatusUpdateSchema
 from app.api.services import CarService
-from app.car_app.schemas import CarCreatingSchema, CarSchema, CarUpdatingSchema
 from app.core.exceptions import CarCreationError, CarDeletingError, CarGettingError, CarUpdateError
 
 router = APIRouter(tags=['Car'])
@@ -57,3 +57,23 @@ async def remove_car(car_id: int, car_service: CarService = Depends()):
         await car_service.delete_car(car_id)
     except CarDeletingError as err:
         raise HTTPException(status_code=err.status_code, detail=str(err))
+
+
+@router.get('/batch-cars', response_model=list[CarSchema])
+async def retrieve_batch_cars(car_ids: list[int] = Query(), car_service: CarService = Depends()):
+    try:
+        cars = await car_service.get_cars_by_ids(car_ids)
+    except CarGettingError as err:
+        raise HTTPException(status_code=err.status_code, detail=str(err))
+
+    return cars
+
+
+@router.post('/update-cars-status', response_model=list[CarSchema])
+async def update_cars(status_schema: StatusUpdateSchema, car_service: CarService = Depends()):
+    try:
+        created_cars = await car_service.update_cars_status(status_schema)
+    except CarCreationError as err:
+        raise HTTPException(status_code=err.status_code, detail=str(err))
+
+    return created_cars

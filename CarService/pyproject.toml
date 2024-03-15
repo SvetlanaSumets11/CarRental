@@ -6,14 +6,12 @@ authors = ["Svitlana Sumets <svetasumets@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dev-dependencies]
-flake8 = "^7.0.0"
-flake8-import-order = "^0.18.2"
-flake8-print = "^5.0.0"
+ruff = "^0.3.0"
 
 [tool.poetry.dependencies]
 python = "^3.11"
 alembic = "^1.11.2"
-pydantic = "^2.6.2"
+pydantic = "^2.6.3"
 pydantic-settings = "^2.0.3"
 asyncpg = "^0.29.0"
 psycopg2 = "^2.9.7"
@@ -22,27 +20,23 @@ sqlalchemy = "2.0.27"
 uvicorn = {extras = ["standard"], version = "^0.27.1"}
 python-multipart = "^0.0.9"
 aioboto3 = "^12.3.0"
-ruff = "^0.2.2"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
-
 
 [tool.ruff]
 line-length = 120
 target-version = "py311"
 exclude = [".venv", "migrations/"]
-lint.select = [
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+
+[tool.ruff.lint]
+select = [
   "E", # Errors
   "F", # Pyflakes
   "I", # isort
   "T20", # flake8-print
 ]
-
-[tool.ruff.format]
-quote-style = "single"
-indent-style = "space"
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
@@ -51,3 +45,7 @@ case-sensitive = false
 detect-same-package = true
 order-by-type = false
 known-local-folder = ["tests", "app"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
